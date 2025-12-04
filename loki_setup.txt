@@ -1,0 +1,17 @@
+# Loki Setup Instructions
+
+1. Start Loki:
+docker run -d --name loki -p 3100:3100 \
+  grafana/loki:2.8.3 \
+  -config.file=/etc/loki/local-config.yaml
+
+2. Start Promtail (log forwarder):
+docker run -d --name promtail \
+  -v $(pwd)/monitoring/promtail.yml:/etc/promtail/promtail.yml \
+  -v /var/lib/docker/containers:/var/lib/docker/containers:ro \
+  grafana/promtail:2.8.3 \
+  -config.file=/etc/promtail/promtail.yml
+
+3. View logs using Loki API:
+curl "http://localhost:3100/loki/api/v1/query" \
+  --data-urlencode 'query={job="docker"}'
